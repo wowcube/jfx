@@ -141,6 +141,13 @@ jobs:
         with:
           name: ${{ job.name }}
           path: |
+            ./jfx/jfx/build/artifacts
+            ./jfx/jfx/build/publications
+            ./jfx/jfx/build/sdk
+            ./jfx/build/artifacts
+            ./jfx/build/publications
+            ./jfx/build/sdk
+            ./build/artifacts
             ./build/publications
             ./build/sdk
 
@@ -230,6 +237,13 @@ jobs:
         with:
           name: ${{ job.name }}
           path: |
+            ./jfx/jfx/build/artifacts
+            ./jfx/jfx/build/publications
+            ./jfx/jfx/build/sdk
+            ./jfx/build/artifacts
+            ./jfx/build/publications
+            ./jfx/build/sdk
+            ./build/artifacts
             ./build/publications
             ./build/sdk
 
@@ -350,5 +364,12 @@ jobs:
         with:
           name: ${{ job.name }}
           path: |
+            ./jfx/jfx/build/artifacts
+            ./jfx/jfx/build/publications
+            ./jfx/jfx/build/sdk
+            ./jfx/build/artifacts
+            ./jfx/build/publications
+            ./jfx/build/sdk
+            ./build/artifacts
             ./build/publications
             ./build/sdk
