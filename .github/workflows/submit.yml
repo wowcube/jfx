@@ -139,7 +139,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ job.name }}
+          name: lin
           path: |
             ./jfx/jfx/build/artifacts
             ./jfx/jfx/build/publications
@@ -235,7 +235,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ job.name }}
+          name: mac
           path: |
             ./jfx/jfx/build/artifacts
             ./jfx/jfx/build/publications
@@ -362,7 +362,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ job.name }}
+          name: win
           path: |
             ./jfx/jfx/build/artifacts
             ./jfx/jfx/build/publications
