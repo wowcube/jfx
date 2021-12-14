@@ -29,6 +29,7 @@ import com.sun.javafx.image.BytePixelSetter;
 import com.sun.javafx.image.IntPixelGetter;
 import com.sun.javafx.image.IntToBytePixelConverter;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 public abstract class BaseIntToByteConverter
@@ -92,11 +93,15 @@ public abstract class BaseIntToByteConverter
             h = 1;
         }
         if (srcbuf.hasArray() && dstbuf.hasArray()) {
-            srcoff += srcbuf.arrayOffset();
-            dstoff += dstbuf.arrayOffset();
-            doConvert(srcbuf.array(), srcoff, srcscanints,
-                      dstbuf.array(), dstoff, dstscanbytes,
-                      w, h);
+            // srcoff += srcbuf.arrayOffset();
+            // dstoff += dstbuf.arrayOffset();
+            // doConvert(srcbuf.array(), srcoff, srcscanints,
+            //           dstbuf.array(), dstoff, dstscanbytes,
+            //           w, h);
+
+            // System.err.println("srcoff: "+srcoff+", dstoff: "+dstoff+", srcscanints: "+srcscanints+", dstscanbytes: "+dstscanbytes+", w: "+w+", h: "+h);
+            dstbuf.order(ByteOrder.LITTLE_ENDIAN);
+            dstbuf.asIntBuffer().put(srcbuf.array());
         } else {
             doConvert(srcbuf, srcoff, srcscanints,
                       dstbuf, dstoff, dstscanbytes,
@@ -143,11 +148,27 @@ public abstract class BaseIntToByteConverter
             h = 1;
         }
         if (dstbuf.hasArray()) {
-            byte dstarr[] = dstbuf.array();
-            dstoff += dstbuf.arrayOffset();
-            doConvert(srcarr, srcoff, srcscanints,
-                      dstarr, dstoff, dstscanbytes,
-                      w, h);
+            // System.err.println("srcoff: "+srcoff+", dstoff: "+dstoff+", srcscanints: "+srcscanints+", dstscanbytes: "+dstscanbytes+", w: "+w+", h: "+h);
+
+            // byte dstarr[] = dstbuf.array();
+            // dstoff += dstbuf.arrayOffset();
+            // doConvert(srcarr, srcoff, srcscanints,
+            //           dstarr, dstoff, dstscanbytes,
+            //           w, h);
+
+            // dstbuf.order(ByteOrder.LITTLE_ENDIAN);
+            // dstbuf.asIntBuffer().put(srcarr);
+
+            var dst = dstbuf.array();
+            int i = 0, j = 0;
+            while (i < w) {
+                int p = srcarr[i];
+                dst[j++] = (byte) ((p));
+                dst[j++] = (byte) ((p >> 8));
+                dst[j++] = (byte) ((p >> 16));
+                dst[j++] = (byte) ((p >> 24));
+                i++;
+            }
         } else {
             IntBuffer srcbuf = IntBuffer.wrap(srcarr);
             doConvert(srcbuf, srcoff, srcscanints,

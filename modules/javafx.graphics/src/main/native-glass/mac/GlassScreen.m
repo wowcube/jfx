@@ -175,7 +175,7 @@ void GlassScreenDidChangeScreenParameters(JNIEnv *env)
     CGDisplayErr err = CGGetActiveDisplayList(MAX_DISPLAY_COUNT, activeDisplays, &displayCount);
     if (err != kCGErrorSuccess)
     {
-        NSLog(@"CGGetActiveDisplayList returned error: %d", err);
+        NSLog(@"CGGetActiveDisplayList returned bad error: %d", err);
     }
     else
     {
@@ -202,7 +202,7 @@ void GlassScreenDidChangeScreenParameters(JNIEnv *env)
 
         if (err != kCGErrorSuccess)
         {
-            NSLog(@"CGDisplayCapture returned error: %d", err);
+            NSLog(@"CGDisplayCapture returned very bad error: %d", err);
             displayID = 0;
         }
         else
