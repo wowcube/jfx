@@ -141,15 +141,9 @@ jobs:
         with:
           name: lin
           path: |
-            ./jfx/jfx/build/artifacts
-            ./jfx/jfx/build/publications
-            ./jfx/jfx/build/sdk
             ./jfx/build/artifacts
             ./jfx/build/publications
             ./jfx/build/sdk
-            ./build/artifacts
-            ./build/publications
-            ./build/sdk
 
 
   macos_x64_build:
@@ -237,15 +231,9 @@ jobs:
         with:
           name: mac
           path: |
-            ./jfx/jfx/build/artifacts
-            ./jfx/jfx/build/publications
-            ./jfx/jfx/build/sdk
             ./jfx/build/artifacts
             ./jfx/build/publications
             ./jfx/build/sdk
-            ./build/artifacts
-            ./build/publications
-            ./build/sdk
 
 
   windows_x64_build:
@@ -364,12 +352,6 @@ jobs:
         with:
           name: win
           path: |
-            ./jfx/jfx/build/artifacts
-            ./jfx/jfx/build/publications
-            ./jfx/jfx/build/sdk
             ./jfx/build/artifacts
             ./jfx/build/publications
             ./jfx/build/sdk
-            ./build/artifacts
-            ./build/publications
-            ./build/sdk

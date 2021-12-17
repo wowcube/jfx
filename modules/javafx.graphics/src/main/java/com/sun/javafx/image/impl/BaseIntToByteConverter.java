@@ -28,6 +28,8 @@ package com.sun.javafx.image.impl;
 import com.sun.javafx.image.BytePixelSetter;
 import com.sun.javafx.image.IntPixelGetter;
 import com.sun.javafx.image.IntToBytePixelConverter;
+import sun.misc.Unsafe;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -148,32 +150,43 @@ public abstract class BaseIntToByteConverter
             h = 1;
         }
         if (dstbuf.hasArray()) {
-            // System.err.println("srcoff: "+srcoff+", dstoff: "+dstoff+", srcscanints: "+srcscanints+", dstscanbytes: "+dstscanbytes+", w: "+w+", h: "+h);
+            var dstarr = dstbuf.array();
 
-            // byte dstarr[] = dstbuf.array();
             // dstoff += dstbuf.arrayOffset();
             // doConvert(srcarr, srcoff, srcscanints,
             //           dstarr, dstoff, dstscanbytes,
             //           w, h);
 
-            // dstbuf.order(ByteOrder.LITTLE_ENDIAN);
-            // dstbuf.asIntBuffer().put(srcarr);
+            // int j = 0;
+            // for (int i = 0; i < w; i++) {
+            //     int p = srcarr[i];
+            //     dstarr[j++] = (byte) ((p));
+            //     dstarr[j++] = (byte) ((p >> 8));
+            //     dstarr[j++] = (byte) ((p >> 16));
+            //     dstarr[j++] = (byte) ((p >> 24));
+            // }
 
-            var dst = dstbuf.array();
-            int i = 0, j = 0;
-            while (i < w) {
-                int p = srcarr[i];
-                dst[j++] = (byte) ((p));
-                dst[j++] = (byte) ((p >> 8));
-                dst[j++] = (byte) ((p >> 16));
-                dst[j++] = (byte) ((p >> 24));
-                i++;
-            }
+            unsafe.copyMemory(srcarr,
+                    Unsafe.ARRAY_INT_BASE_OFFSET,
+                    dstarr,
+                    Unsafe.ARRAY_BYTE_BASE_OFFSET,
+                    (long) w * Unsafe.ARRAY_INT_INDEX_SCALE);
         } else {
             IntBuffer srcbuf = IntBuffer.wrap(srcarr);
             doConvert(srcbuf, srcoff, srcscanints,
                       dstbuf, dstoff, dstscanbytes,
                       w, h);
+        }
+    }
+
+    protected static Unsafe unsafe;
+    static {
+        try {
+            var field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            unsafe = (Unsafe) field.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }
