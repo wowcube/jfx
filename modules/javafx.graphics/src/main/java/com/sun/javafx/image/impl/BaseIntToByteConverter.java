@@ -28,7 +28,10 @@ package com.sun.javafx.image.impl;
 import com.sun.javafx.image.BytePixelSetter;
 import com.sun.javafx.image.IntPixelGetter;
 import com.sun.javafx.image.IntToBytePixelConverter;
+import sun.misc.Unsafe;
+
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 public abstract class BaseIntToByteConverter
@@ -92,11 +95,14 @@ public abstract class BaseIntToByteConverter
             h = 1;
         }
         if (srcbuf.hasArray() && dstbuf.hasArray()) {
-            srcoff += srcbuf.arrayOffset();
-            dstoff += dstbuf.arrayOffset();
-            doConvert(srcbuf.array(), srcoff, srcscanints,
-                      dstbuf.array(), dstoff, dstscanbytes,
-                      w, h);
+            // srcoff += srcbuf.arrayOffset();
+            // dstoff += dstbuf.arrayOffset();
+            // doConvert(srcbuf.array(), srcoff, srcscanints,
+            //           dstbuf.array(), dstoff, dstscanbytes,
+            //           w, h);
+
+            dstbuf.order(ByteOrder.LITTLE_ENDIAN);
+            dstbuf.asIntBuffer().put(srcbuf.array());
         } else {
             doConvert(srcbuf, srcoff, srcscanints,
                       dstbuf, dstoff, dstscanbytes,
@@ -143,16 +149,34 @@ public abstract class BaseIntToByteConverter
             h = 1;
         }
         if (dstbuf.hasArray()) {
+            // byte dstarr[] = dstbuf.array();
+            // dstoff += dstbuf.arrayOffset();
+            // doConvert(srcarr, srcoff, srcscanints,
+            //           dstarr, dstoff, dstscanbytes,
+            //           w, h);
+
             byte dstarr[] = dstbuf.array();
-            dstoff += dstbuf.arrayOffset();
-            doConvert(srcarr, srcoff, srcscanints,
-                      dstarr, dstoff, dstscanbytes,
-                      w, h);
+            UNSAFE.copyMemory(srcarr,
+                    Unsafe.ARRAY_INT_BASE_OFFSET + srcoff,
+                    dstarr,
+                    Unsafe.ARRAY_BYTE_BASE_OFFSET + dstoff,
+                    (long) w * Unsafe.ARRAY_INT_INDEX_SCALE);
         } else {
             IntBuffer srcbuf = IntBuffer.wrap(srcarr);
             doConvert(srcbuf, srcoff, srcscanints,
                       dstbuf, dstoff, dstscanbytes,
                       w, h);
+        }
+    }
+
+    protected static Unsafe UNSAFE;
+    static {
+        try {
+            var field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            UNSAFE = (Unsafe) field.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }

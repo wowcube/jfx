@@ -25,12 +25,9 @@
 
 package javafx.scene.control;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.sun.javafx.binding.ExpressionHelper;
+import com.sun.javafx.collections.ListListenerHelper;
+import com.sun.javafx.collections.NonIterableChange;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -40,20 +37,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WritableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.css.CssMetaData;
-import javafx.css.StyleConverter;
-import javafx.css.StyleableBooleanProperty;
-import javafx.css.StyleableIntegerProperty;
-import javafx.css.StyleableProperty;
-
-import com.sun.javafx.binding.ExpressionHelper;
-import com.sun.javafx.collections.ListListenerHelper;
-import com.sun.javafx.collections.NonIterableChange;
+import javafx.css.*;
 import javafx.css.converter.SizeConverter;
+import javafx.scene.AccessibleRole;
 import javafx.scene.control.skin.TextAreaSkin;
 
-import javafx.css.Styleable;
-import javafx.scene.AccessibleRole;
+import java.util.*;
 
 /**
  * Text input component that allows a user to enter multiple lines of
@@ -464,8 +453,9 @@ public class TextArea extends TextInputControl {
     }
 
     @Override final void textUpdated() {
-        setScrollTop(0);
-        setScrollLeft(0);
+        // System.err.println("DO FUCKIN NOTHING");
+        // setScrollTop(0);
+        // setScrollLeft(0);
     }
 
     /**
@@ -596,7 +586,7 @@ public class TextArea extends TextInputControl {
     private DoubleProperty scrollTop = new SimpleDoubleProperty(this, "scrollTop", 0);
     public final DoubleProperty scrollTopProperty() { return scrollTop; }
     public final double getScrollTop() { return scrollTop.getValue(); }
-    public final void setScrollTop(double value) { scrollTop.setValue(value); }
+    public final void setScrollTop(double value) { if (value > 0.1) scrollTop.setValue(value); }
 
 
     /**

@@ -29,6 +29,8 @@ import com.sun.javafx.image.BytePixelAccessor;
 import com.sun.javafx.image.BytePixelGetter;
 import com.sun.javafx.image.BytePixelSetter;
 import com.sun.javafx.image.ByteToBytePixelConverter;
+import sun.misc.Unsafe;
+
 import java.nio.ByteBuffer;
 
 abstract class BaseByteToByteConverter
@@ -145,11 +147,18 @@ abstract class BaseByteToByteConverter
             h = 1;
         }
         if (dstbuf.hasArray()) {
+            // byte dstarr[] = dstbuf.array();
+            // dstoff += dstbuf.arrayOffset();
+            // doConvert(srcarr, srcoff, srcscanbytes,
+            //           dstarr, dstoff, dstscanbytes,
+            //           w, h);
+
             byte dstarr[] = dstbuf.array();
-            dstoff += dstbuf.arrayOffset();
-            doConvert(srcarr, srcoff, srcscanbytes,
-                      dstarr, dstoff, dstscanbytes,
-                      w, h);
+            UNSAFE.copyMemory(srcarr,
+                    Unsafe.ARRAY_BYTE_BASE_OFFSET + srcoff,
+                    dstarr,
+                    Unsafe.ARRAY_BYTE_BASE_OFFSET + dstoff,
+                    dstarr.length);
         } else {
             ByteBuffer srcbuf = ByteBuffer.wrap(srcarr);
             doConvert(srcbuf, srcoff, srcscanbytes,
@@ -279,6 +288,17 @@ abstract class BaseByteToByteConverter
                 srcoff += srcscanbytes;
                 dstoff += dstscanbytes;
             }
+        }
+    }
+
+    protected static Unsafe UNSAFE;
+    static {
+        try {
+            var field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            UNSAFE = (Unsafe) field.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }
